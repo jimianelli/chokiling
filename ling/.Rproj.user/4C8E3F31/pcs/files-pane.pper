@@ -1,0 +1,13 @@
+{
+    "sortOrder": [
+        {
+            "columnIndex": 2,
+            "ascending": true
+        },
+        {
+            "columnIndex": 4,
+            "ascending": false
+        }
+    ],
+    "path": "~/_mymods/sprfmo/jjm/assessment/ling/input"
+}

@@ -1,0 +1,27 @@
+{
+    "id": "A0D66FF7",
+    "path": "~/_mymods/sprfmo/jjm/assessment/choki/choki.R",
+    "project_path": "choki.R",
+    "type": "r_source",
+    "hash": "3104329185",
+    "contents": "",
+    "dirty": false,
+    "created": 1679844521013.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "518,0",
+        "scrollLine": "217",
+        "marks": "<:468,13\n>:468,16"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1680038868,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1680038868255,
+    "read_only": false,
+    "read_only_alternatives": []
+}

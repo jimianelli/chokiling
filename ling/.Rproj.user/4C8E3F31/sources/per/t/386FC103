@@ -1,0 +1,26 @@
+{
+    "id": "386FC103",
+    "path": "~/_mymods/sprfmo/jjm/assessment/ling/config/lingN_1.00.ctl",
+    "project_path": "config/lingN_1.00.ctl",
+    "type": "text",
+    "hash": "3767571182",
+    "contents": "",
+    "dirty": false,
+    "created": 1679835635207.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "0,9",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1679844386,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1679844386,
+    "read_only": false,
+    "read_only_alternatives": []
+}
