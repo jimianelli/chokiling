@@ -1,11 +1,12 @@
-# 2019_TAF_template
+# Example models in jjm 
 
-## Tempate repository for all TAF analyses
+## Chilean assessment examples
 
-The code in this repository is to serve as an example to get you started.  Please feel free to delete it all and start from scratch if you wish.
+### Ling (Congrio colorado)
 
-See also some guidance on the TAF Wiki page:
-https://github.com/ices-taf/doc/wiki/Creating-a-TAF-analysis
 
-and the help documention in the icesTAF package:
-https://www.rdocumentation.org/packages/icesTAF
+
+The code in this repository is to serve as an example to get you started.  
+
+For general guidance and tutorial please visit: 
+https://github.com/lee-qi/jjmwkshp/tree/main

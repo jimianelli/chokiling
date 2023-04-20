@@ -1,0 +1,253 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+# Chilean hoki assessment example
+
+March 2023 external review, Valparaiso, Chile
+
+## Analytic Approach
+
+See @sec-model for example details describing the model and fitting approach.
+
+### Model Selection and Evaluation
+
+#### Example model alternatives
+
+The @tbl-hoki_mods shows some alternative model specifications and
+naming convention.
+
+| Model | Description                                                                                                                 |
+|-----------------|-------------------------------------------------------|
+| 1.00  | Fixed acoustic survey q at 0.75, constant acoustic selectivity, steepness 0.65, Beverton holt estimated from SRR since 2000 |
+| 1.01  | As 0.00 but with steepness estimated with mean 0.65, CV=0.2                                                                 |
+| 1.02  | As 0.01 but with acoustic survey q estimated with prior mean at 0.75, CV=0.2                                                |
+| 1.03  | As 0.02 but with added flexibility to acoustic survey                                                                       |
+| 1.04  | As 0.03 but with SRR Estimated over 35 years (since 1986)                                                                   |
+| 1.05  | As 0.04 but with Ricker SRR                                                                                                 |
+
+: Some model configurations described for Chilean hoki stock based on
+data from the main CHOSAM model in 2022. {#tbl-hoki_mods}
+
+## Results
+
+### Fits to indices
+
+The model fits to the index data can be seen in @fig-index_fits
+
+```{r,eval=T}
+#| label: fig-index_fits
+#| warning: false
+#| echo: false
+#| fig-cap: "Fit to the index data"
+#| fig-alt: "A line plot on a polar axis"
+library(jjmR)
+library(ggplot2)
+library(tidyverse)
+library(kableExtra)
+setwd("../choki")
+theme_set(theme_jjm(base_size = 15))
+
+m0 <- readJJM("1_1.00", path = "config", input = "input")
+m1 <- readJJM("1_1.01", path = "config", input = "input")
+m2 <- readJJM("1_1.02", path = "config", input = "input")
+m3 <- readJJM("1_1.03", path = "config", input = "input")
+m4 <- readJJM("1_1.04", path = "config", input = "input")
+m5 <- readJJM("1_1.05", path = "config", input = "input")
+mods <- combineModels(m0,m1,m2,m3,m4,m5)
+tidy_mods <- tidy_JJM(mods)
+
+index_fits <- tidy_mods$index_fits
+
+index_fits %>% 
+  ggplot() + 
+  geom_pointrange(aes(year, observed_ind, ymin = observed_ind - 1.96 * observed_se, ymax =  observed_ind + 1.96 * observed_se), alpha = 0.5) +
+  geom_path(aes(year, pred_ind, color = model)) + 
+  facet_grid(fleet_name~., scales = "free_y") + 
+  scale_x_continuous(name = "Year", guide = guide_axis(n.dodge = 2)) + 
+  scale_y_continuous(name = "Index Values")
+```
+
+### Fit to age composition data
+
+The model fits to age composition data can be seen in @fig-age_comps
+
+```{r}
+#| label: fig-age_comps
+#| warning: false
+#| echo: false
+#| fig-cap: "Observed and predicted proportions-at-age for model 4, Chilean hoki."
+#| fig-height: 10
+#| fig-width: 6
+age_fits <- get_age_fits(c(m4))
+age_fits %>% mutate(age=ifelse(age>9,10,age)) |> 
+  filter(stock == "Stock_1", year>2010) %>% 
+  pivot_longer(predicted:observed) %>% 
+  ggplot() + scale_y_continuous(breaks = c(.3,.60)) +
+  scale_x_continuous(breaks = 1:10) +
+  geom_density(aes(age, value, linetype=name,fill = name),stat = "identity", alpha = 0.3) + 
+  facet_grid(year~fleet_name)
+```
+
+### Likelihood Table
+
+Table of likelihood values for different Chilean hoki model
+configurations are shown in @tbl-like.
+
+```{r }
+#| label: tbl-like
+#| tbl-cap: Table of likelihood values for different Chilean hoki model configurations. See @tbl-hoki_mods for details.
+LL <- cbind(summary(m0)$like,summary(m1)$like,summary(m2)$like,summary(m3)$like,summary(m4)$like,summary(m5)$like)
+knitr::kable(LL) %>% kableExtra::kable_styling()
+```
+
+### Gear selectivity
+
+Patterns in gear selectivity can be seen in @fig-selectivity
+
+```{r}
+#| label: fig-selectivity
+#| fig-cap: "Fishery selectivity estimates for Chilean hoki model 1 and 2."
+selectivities <- get_selectivities(mods[1:2])
+plot_selectivities(selectivities)+ylab("Years")
+
+```
+
+### Trend information
+
+The trend information can be seen at @fig-trend
+
+```{r}
+#| label: fig-trend
+#| warning: false
+#| echo: false
+#| fig-cap: "Plots of recruitment (top) spawning biomass (middle) and totl biomass for the different Chilean hoki model configurations"
+#| fig-height: 10
+totals <- get_totals(mods) 
+totals |>  
+ggplot(aes(year, value, ymin=lowerbound, ymax=upperbound,fill = model, linetype = model)) +
+geom_ribbon(alpha=.3) + expand_limits(y = 0) +
+facet_grid(metric ~., scales = "free_y")
+```
+
+The fishing mortality rates from Model 1.04 can be seen at @fig-fs.
+
+```{r}
+#| label: fig-fs
+#| warning: false
+#| echo: false
+#| fig-cap: "Estimates of fishing mortality for Model 1.04 of Chilean hoki. "
+#| fig-height: 7
+#| fig-width: 7
+
+fishing_mortality <- get_fishing_mortality(c(m4))
+fishing_mortality %>% 
+  ggplot(aes(year, mortality, color = age, group = age)) + 
+  geom_line() + 
+  scale_color_viridis_c() +
+  facet_grid(model~. ) 
+```
+
+
+  
+### Risk Table
+
+The near and medium term patterns for model 1.04 are shown as an example
+in @tbl-risk.
+
+```{r results='asis'}
+
+# From jjmR::report()
+table   = summary(m4, Projections = TRUE, Fmult=c(0, "FMSY", .75, 1, 1.25))$proj[[1]]
+
+#Nombre de la tabla: solo numeros
+namesCol = colnames(table[[1]])
+
+#Nombre de la col F. Siempre existe.
+NameFs = paste0('Multiplier of \n', '$F_{', namesCol[1], '}$')
+
+#Nombre de las col B. Depende de la longitud de BiomProj
+nBiom = 3
+NameBs = NULL
+for(i in 1:nBiom){
+  NameBs1 = c(paste0("$B_{", namesCol[i*2], "}$"), paste0("$P(B_{", namesCol[i*2+1], "}$", " > ", "$B_{MSY})$ %"))
+  NameBs = c(NameBs, NameBs1)
+}
+
+#Nombre de las col C. Depende de la longitud de CapProj
+nCap = 2
+indName = 1 + nBiom * 2
+NameCt = NULL
+for(i in 1:nCap){
+  NameCt1 = paste0("Catch \n", namesCol[indName + i], " (kt)")
+  NameCt = c(NameCt, NameCt1)
+}
+
+###
+NamesCol = c(NameFs, NameBs, NameCt)
+for(i in seq_along(table)){
+  colnames(table[[i]]) = NamesCol  
+}
+```
+
+```{r}
+#| label: tbl-risk
+#| warning: true
+#| echo: false
+#| tbl-cap: "Table of estimated stock risks for spawning biomass and catch for Model 1.04 of Chilean hoki. "
+knitr::kable(table[[1]], format='html',
+             align="c",escape=FALSE) %>% kableExtra::kable_styling(
+  latex_options = c("HOLD_position", "scale_down")) #%>% 
+ #col.names = c("Grouping", "$M$", "$SD$", "N", "$\\eta$"), escape = FALSE) %>%
+
+```
+
+### Retrospective plots
+
+```{r}
+#plot(mods[2:3], var="SSB") # only SSB
+
+```
+
+### Kobe plots
+
+```{r}
+#| label: fig-kobe
+#| fig-cap: "KOBE plots for different stock-recruitment relationships (models 1.03 and model 1.04) for Chilean hoki. See @tbl-hoki_mods for model descriptions."
+msy_my_results = get_msy_mt(mods)
+kobe(mods[4:5], engine = "ggplot",overlay=TRUE)
+```
+
+
+### Stock projections
+
+The @fig-proj shows
+The @fig-proj2 shows
+
+```{r}
+#| label: fig-proj 
+#| echo: false
+#| fig-cap: "Stock projections for different assumed future fishing mortality rates for Chilean hoki, model 1.04)."
+m4_diag <- diagnostics(m4)
+plot(m4_diag, var = "ssbPrediction")
+```
+
+```{r}
+#| label: fig-proj2
+#| echo: false
+#| fig-cap: "Stock projections for different assumed future fishing mortality rates for Chilean hoki, model 1.04)."
+m4_diag <- diagnostics(m4)
+plot(m4_diag, var = "catchPrediction")
+```
+
+
+## Literature Cited
+
+Include citations that are relevant to understanding the stock and its
+status, but are not cited in the report in a special "extra references"
+section.  
