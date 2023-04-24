@@ -1,6 +1,6 @@
 {
     "id": "5DDF73C9",
-    "path": "~/_mymods/sprfmo/jjm/assessment/choki/README.md",
+    "path": "~/_mymods/sprfmo/chokiling/choki/README.md",
     "project_path": "README.md",
     "type": "markdown",
     "hash": "2729286608",
@@ -12,16 +12,16 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "12,0",
+        "cursorPosition": "22,0",
         "scrollLine": "0",
-        "marks": "h:0,0\n<:16,29\n>:16,34"
+        "marks": "h:0,0\n<:0,0\n>:22,-1"
     },
     "folds": "",
-    "lastKnownWriteTime": 1680038868,
+    "lastKnownWriteTime": 1681227512,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1680038868351,
+    "last_content_update": 1681227512,
     "read_only": false,
     "read_only_alternatives": []
 }

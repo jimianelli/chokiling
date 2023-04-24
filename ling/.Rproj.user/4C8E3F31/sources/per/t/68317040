@@ -1,9 +1,9 @@
 {
     "id": "68317040",
-    "path": "~/_mymods/sprfmo/jjm/assessment/ling/ling.R",
+    "path": "~/_mymods/sprfmo/chokiling/ling/ling.R",
     "project_path": "ling.R",
     "type": "r_source",
-    "hash": "1767717194",
+    "hash": "4231756921",
     "contents": "",
     "dirty": false,
     "created": 1679673486839.0,
@@ -12,16 +12,16 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "8,0",
-        "scrollLine": "0",
-        "marks": "<:9,0\n>:10,-1"
+        "cursorPosition": "119,49",
+        "scrollLine": "103",
+        "marks": "<:24,0\n>:27,-1"
     },
     "folds": "",
-    "lastKnownWriteTime": 1679784818,
+    "lastKnownWriteTime": 1681142748,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1679784818489,
+    "last_content_update": 1681142748764,
     "read_only": false,
     "read_only_alternatives": []
 }

@@ -1,32 +1,46 @@
 library(jjmR)
 library(ggplot2)
 library(tidyverse)
-# mod0.00 <- runit(geth("0.00"),pdf=TRUE,portrait=F,est=TRUE,exec="../src/jjms")
+dir.jjmR <- "~/_mymods/sprfmo/jjmR"
+
+library(foreach)
+library(doParallel)
+registerDoParallel(8)
+dir.jjm <- getwd()
+setwd(dir.jjmR)
+devtools::load_all()
+setwd(dir.jjm)
+getwd()
+
+  # mod0.00 <- runit(geth("0.00"),pdf=TRUE,portrait=F,est=TRUE,exec="../src/jjms")
 getwd()
 rm(m1)
 geth <- function(mod,h=hyp) paste0(h,"_", mod) # Package? Or keep?
 hyp="lingN"
 
-m0 <- runit(geth("1.00") ,pdf=TRUE,portrait=F,est=TRUE,exec="../../src/jjms")
+setwd(dir.jjmR)
+#source("R/jjmr-internal.R")
+devtools::load_all()
+setwd(dir.jjm)
+m0 <- runit(geth("1.00") ,pdf=TRUE,portrait=F,est=TRUE,exec="../src/jjm")
+readJJM
+m0 <- readJJM(geth("1.00"),exec="../src/jjm")
 
-m1 <- runit(geth("1.01"),pdf=TRUE,portrait=F,est=TRUE,exec="../../src/jjms")
-m2 <- runit(geth("1.02"),pdf=TRUE,portrait=F,est=TRUE,exec="../../src/jjms")
-m3 <- runit(geth("1.03"),pdf=TRUE,portrait=F,est=TRUE,exec="../../src/jjms")
-m4 <- runit(geth("1.04"),pdf=TRUE,portrait=F,est=TRUE,exec="../../src/jjms")
+m1 <- runit(geth("1.01"),pdf=TRUE,portrait=F,est=TRUE,exec="../src/jjm")
 mods <- combineModels(m0,m1,m2,m3,m4)
+mods <- combineModels(m0,m1)
 names(mods)
 
 # Retro try ----
 
-modnm <- "model_1.04"
-
+modnm <- "lingN_1.00"
 mod <- readJJM(modnm, path = "config", input = "input")
 mod_r <- mod
 names(mod_r) <- modnm
-Npeels<-5
+Npeels<-8
 
-ret1 <- retro(model = m4, n= 8, output = "results", exec="../../src/jjms")
-ret1 <- retro(model = mod_r, n = Npeels, output = "results", exec="../src/jjms",parallel=T)
+ret1 <- retro(model = mod_r, n = Npeels, output = "results", exec="../src/jjm",parallel=T)
+m0 <- readJJM(geth("1.00"),exec="../src/jjm")
 
 load(paste0("results/",modnm,"_retrospective.RData"))
 ret<-output
@@ -46,14 +60,13 @@ tidy_jjm <- tidy_JJM(mods)
 get_selectivities
 
 selectivities <- get_selectivities(tidy_jjm)
-selectivities <- get_selectivities(m3)
+selectivities <- get_selectivities(m0)
 selectivities
 
 plot_selectivities(selectivities)
 plot_selectivities(selectivities,fleet="ind")
 ?plot_selectivities
 
-str(m1)
 index_fits <- tidy_jjm$index_fits
 index_fits
 index_fits %>% 
@@ -68,7 +81,7 @@ summary(m1)
 plot(mods,combine=TRUE,what='ssb',stack=F)
 plot(mods,combine=TRUE,what='recruitment',stack=F)
 
-df1<-as_tibble(m4[[1]][[5]][[1]]$df1)
+df1<-as_tibble(m1[[1]][[5]][[1]]$df1)
 
 names(df1)<-c("type","year","est","std","lb","ub")
 df<-rbind(df1 |> mutate(model="base"))
